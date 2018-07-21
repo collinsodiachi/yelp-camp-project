@@ -1,0 +1,24 @@
+<% include ../partials/header %>
+<div class="row">
+    <h1><%= user.firstName + " " + user.lastName %></h1>
+    <div class="col-md-4">
+        <div class="thumbnail">
+        <img src="<%= user.avarter %>">
+        </div>
+        <div class= "caption"><a href="mailto:<%= user.email %>"><%= user.email %></a></div>
+        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+    </div>
+    <div class="col-md-8">
+    <h2> <%=user.username%>'s campgrounds</h2>
+    <ul>
+    <% campgrounds.forEach(function(campground){ %>
+        <li><a href="/campgrounds/<%= campground.id %>"><%= campground.name%></a></li>
+    <% }) %>
+    </ul>
+    </div>
+</div> 
+
+
+
+
+<% include ../partials/footer %> 
