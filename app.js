@@ -1,23 +1,22 @@
-var express    = require("express"),
-    app        = express(),
-    bodyParser = require("body-parser"),
-    mongoose   = require("mongoose"),
-    flash      = require("connect-flash"),
-    passport   = require("passport"),
-    LocalStrategy = require("passport-local"),
-    methodOverride = require("method-override"),
-    Campground = require("./models/campground"),
-    Comment    = require("./models/comment"),
-    User       = require("./models/user"),
-    session    =require("express-session"),
-    seedDB     = require("./seed");
+var express         = require("express"),
+    app             = express(),
+    bodyParser      = require("body-parser"),
+    mongoose        = require("mongoose"),
+    flash           = require("connect-flash"),
+    passport        = require("passport"),
+    LocalStrategy   = require("passport-local"),
+    methodOverride  = require("method-override"),
+    Campground      = require("./models/campground"),
+    Comment         = require("./models/comment"),
+    User            = require("./models/user"),
+    session         =require("express-session");
 
-//Requiring Routes    
-var commentRoutes       = require("./routes/comments"),
-    campgroundRoutes    = require("./routes/campgrounds"),
-    indexRoutes         = require("./routes/index");
-   
-// seedDB();   seed the database
+//Required Routes    
+var commentRoutes   = require("./routes/comments"),
+    campgroundRoutes= require("./routes/campgrounds"),
+    indexRoutes     = require("./routes/index");
+
+//Mongose database connection
 //mongoose.connect("mongodb://localhost/yelp_camp_v13Deployed");
 mongoose.connect("mongodb://collins:Gateway29@ds243501.mlab.com:43501/cyelpcamp");
 
@@ -33,6 +32,7 @@ app.use(require("express-session")({
     resave:false,
     saveUninitialized: false
 }))
+
 app.locals.moment = require("moment");
 app.use(passport.initialize())
 app.use(passport.session())
