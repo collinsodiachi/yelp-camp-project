@@ -69,6 +69,7 @@ router.get('/forgot', function(req, res) {
   res.render('forgot');
 });
 
+
 router.post('/forgot', function(req, res, next) {
   async.waterfall([
     function(done) {
@@ -79,14 +80,16 @@ router.post('/forgot', function(req, res, next) {
     },
     function(token, done) {
       User.findOne({ email: req.body.email }, function(err, user) {
-        if (!user) {
-          req.flash('error', 'No account with that email address exists.');
-          return res.redirect('/forgot');
+        if(err){
+          console.log(err)
+        }else{
+          if (!user) {
+            req.flash('error', 'No account with that email address exists.');
+            return res.redirect('/forgot');
+          }
         }
-
         user.resetPasswordToken = token;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-
         user.save(function(err) {
           done(err, token, user);
         });
@@ -110,7 +113,6 @@ router.post('/forgot', function(req, res, next) {
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
       smtpTransport.sendMail(mailOptions, function(err) {
-        console.log('mail sent');
         req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
         done(err, 'done');
       });
@@ -121,40 +123,59 @@ router.post('/forgot', function(req, res, next) {
   });
 });
 
-//Password Reset2
 
+//Password Reset
 router.get('/reset/:token', function(req, res) {
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
-    if (!user) {
-      req.flash('error', 'Password reset token is invalid or has expired.');
-      return res.redirect('/forgot');
+    if(err){
+      console.log(err)
+    }else{
+      if (!user) {
+        req.flash('error', 'Password reset token is invalid or has expired.');
+        return res.redirect('/forgot');
+      }
+      res.render('reset', {token: req.params.token});
     }
-    res.render('reset', {token: req.params.token});
   });
 });
 
 router.post('/reset/:token', function(req, res) {
   async.waterfall([
     function(done) {
-      User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
-        if (!user) {
-          req.flash('error', 'Password reset token is invalid or has expired.');
-          return res.redirect('back');
-        }
-        if(req.body.password === req.body.confirm) {
-          user.setPassword(req.body.password, function(err) {
-            user.resetPasswordToken = undefined;
-            user.resetPasswordExpires = undefined;
-
-            user.save(function(err) {
-              req.logIn(user, function(err) {
-                done(err, user);
-              });
-            });
-          })
-        } else {
+      User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user){
+        if(err){
+          console.log(err)
+        }else{
+          if (!user) {
+            req.flash('error', 'Password reset token is invalid or has expired.');
+            return res.redirect('back');
+          }
+          if(req.body.password === req.body.confirm){
+            user.setPassword(req.body.password, function(err){
+              if(err){
+                console.log(err)
+              }else{
+                user.resetPasswordToken = undefined;
+                user.resetPasswordExpires = undefined;
+                user.save(function(err){
+                  if(err){
+                    console.log(err)
+                  }else{
+                    req.logIn(user, function(err) {
+                      if(err){
+                        console.log(err)
+                      }else{
+                          done(err, user);
+                      }
+                    });
+                  }
+                });
+              }
+            })
+          }else {
             req.flash("error", "Passwords do not match.");
             return res.redirect('back');
+          }
         }
       });
     },
@@ -178,11 +199,14 @@ router.post('/reset/:token', function(req, res) {
         done(err);
       });
     }
-  ], function(err) {
-    res.redirect('/campgrounds');
+  ], function(err){
+      if(err){
+        console.log(err)
+      }else{
+        res.redirect('/campgrounds');
+      }
   });
 });
-
 
 
 //USER PROFILE
@@ -206,3 +230,5 @@ router.get("/users/:id", function(req, res){
 
 //EXPORT ROUTER
 module.exports = router;
+
+

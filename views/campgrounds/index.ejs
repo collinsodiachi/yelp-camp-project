@@ -1,10 +1,8 @@
 <% include ../partials/header %>
 
-
-
-    <% if (currentUser && currentUser.isAdmin){ %>
-        <h2>Admin</h2>
-    <% } %>
+<% if (currentUser && currentUser.isAdmin){ %>
+    <h2>Admin</h2>
+<% } %>
  
     <header class="jumbotron"> 
         <div class="container"> 
@@ -15,7 +13,7 @@
             <p>
                 <a class= "btn btn-primary btn-lg" href="/campgrounds/new">Add new campgrounds</a>
             </p>
-            <% if(noMatch) {%>
+            <% if(noCampground) {%>
                 
             <% }else{ %>
             <p>
@@ -31,34 +29,34 @@
     </header>
 
     <div class="row text-center" style="display:flex; flex-wrap:wrap;">
-        <% if(noMatch){ %>
+        <% if(noCampground){ %>
             <div class=col-md-12> 
-                <h3><%= noMatch %></h3>
-                 <p>
-                <form action="/campgrounds" method="GET" class="form-inline">
-                    <div class="form-group">
-                        <input type="search" name="search" class="form-control", placeholder="campground search..."> 
-                        <input type="submit" class="btn btn-default" value="Search">
-                    </div>
-                </form>
-            </p>
-            </div>
-            <% } %>
-            
-            <% campgrounds.forEach(function(campground){ %>
-            <div class="col-md-3 col-sm-6">
-            <div class="thumbnail">
-                <img src="<%=campground.image %>">
-            <div class="caption">
-                <h4>
-                    <%= campground.name %>
-                </h4>
-            </div>
+                <h3><%= noCampground %></h3>
                 <p>
-                   <a href="/campgrounds/<%=campground._id %>" class="btn btn-primary">More Info</a> 
+                    <form action="/campgrounds" method="GET" class="form-inline">
+                        <div class="form-group">
+                            <input type="search" name="search" class="form-control", placeholder="campground search..."> 
+                        <input type="submit" class="btn btn-default" value="Search">
+                        </div>
+                    </form>
                 </p>
             </div>
-        </div>
+        <% } %>
+            
+        <% campgrounds.forEach(function(campground){ %>
+            <div class="col-md-3 col-sm-6">
+                <div class="thumbnail">
+                    <img src="<%=campground.image %>">
+                    <div class="caption">
+                        <h4>
+                            <%= campground.name %>
+                        </h4>
+                    </div>
+                    <p>
+                        <a href="/campgrounds/<%=campground._id %>" class="btn btn-primary">More Info</a> 
+                    </p>
+                </div>
+            </div>
         <% }) %>
    </div>
         
